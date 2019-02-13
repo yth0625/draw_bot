@@ -1,0 +1,19 @@
+{
+  "name": "draw_bot",
+  "version": "1.0.0",
+  "description": "Randomly draws of the channel members.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yth0625/draw_bot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yth0625/draw_bot/issues"
+  },
+  "homepage": "https://github.com/yth0625/draw_bot#readme"
+}
