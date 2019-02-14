@@ -1,4 +1,6 @@
 {
 	"Mattermost_Server_URL": "",
+	"Mattermost_Bot_ID": "",
+	"Mattermost_Bot_Password": "",
 	"Use_Port": ""
 }
