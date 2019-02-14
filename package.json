@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/yth0625/draw_bot/issues"
   },
-  "homepage": "https://github.com/yth0625/draw_bot#readme"
+  "homepage": "https://github.com/yth0625/draw_bot#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "node-fetch": "^2.3.0"
+  }
 }
