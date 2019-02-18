@@ -18,7 +18,8 @@ module.exports = (app) => {
                         'channelId': channel_id,
                         'memberList': [
                             ...channelUserList
-                        ]
+                        ],
+                        'maxNumberToDraw': channelUserList.length >= 5 ? 5 : channelUserList.length 
                     });
 
                     //TODO file path 깔끔하게 고치기
@@ -44,22 +45,29 @@ module.exports = (app) => {
 
     app.post('/draw', (req, res) => {
         const {channel_id} = req.body;
-        const number = req.body.content.number === undefined ? 0 : req.body.content.number;
 
-        if ( number === 0 ) {
+        try {
+            const number = req.body.content.number === undefined ? 0 : req.body.content.number;
+        } catch {
             memberFile.channelList.map( channel => {
                 if ( channel.channelId === channel_id ) {
+                    let action = new Array();
+
+                    for(let a = 1; a <= channel.maxNumberToDraw; a++) { 
+                        action.push(makeAction(a + '명', '/draw', {number: a}));
+                    }
+
                     const attachments = [{
-                        "title": "Draw Bot",
-                        "text": "draw bot 입니다. 아래 버튼을 이용하여 사람을 뽑아줍니다.",
-                        "actions": []
+                        "title": "Draow Bot",
+                        "text": "몇 명을 뽑겠습니까 ?",
+                        "action": [
+                            action
+                        ]
                     }];
-                    res.send()
+                    
+                    res.send({ update: { props: { attachments } } });
                 } 
             })
-        } else {
-
         }
-
     });
 };
