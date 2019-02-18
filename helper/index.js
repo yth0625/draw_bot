@@ -27,11 +27,16 @@ exports.saveFile = function (storagePath, targetPath) {
     });
 }
 
-exports.makeAction = function (name, path) {
+exports.makeAction = function (name, path, content) {
+    if(content === undefined) content = null;
+
     return {
         name: name,
         integration: {
-            url: `127.0.0.1:${config.Use_Port}/${path}`
+            url: `127.0.0.1:${config.Use_Port}/${path}`,
+            context: {
+                content
+            }
         }
     };
 }
