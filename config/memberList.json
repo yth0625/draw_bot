@@ -3,7 +3,8 @@
         {
             "channelId": "",
             "memberList": [
-            ]
+            ],
+			"maxNumberToDraw": 5
         }
     ]
 }
