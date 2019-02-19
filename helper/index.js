@@ -33,7 +33,7 @@ exports.makeAction = function (name, path, content) {
     return {
         name: name,
         integration: {
-            url: `127.0.0.1:${config.Use_Port}/${path}`,
+            url: `http://${config.Bot_Server_URL}:${config.Use_Port}/${path}`,
             context: {
                 content
             }

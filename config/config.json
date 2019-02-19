@@ -1,4 +1,5 @@
 {
+	"Bot_Server_URL": "",
 	"Mattermost_Server_URL": "",
 	"Mattermost_Bot_Personal_Token": "",
 	"Use_Port": ""
