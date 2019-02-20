@@ -34,9 +34,7 @@ exports.makeAction = function (name, path, content) {
         name: name,
         integration: {
             url: `http://${config.Bot_Server_URL}:${config.Use_Port}/${path}`,
-            context: {
-                content
-            }
+            context: content
         }
     };
 }

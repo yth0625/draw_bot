@@ -23,7 +23,7 @@ module.exports = (app) => {
                                 'memberList': 
                                     channelUserList.map( user => {return {"userName": user, "type": "O"}})
                                 ,
-                                'maxNumberToDraw': channelUserList.length >= 5 ? 5 : channelUserList.length 
+                                'maxNumberToDraw': channelUserList.length > 5 ? 5 : channelUserList.length - 1
                             });
         
                             //TODO file path 깔끔하게 고치기
@@ -77,13 +77,13 @@ module.exports = (app) => {
         } catch (error) {
             memberFile.channelList.map( channel => {
                 if ( channel.channelId === channel_id ) {
-                    let action = new Array();
+                    let actions = new Array();
 
                     for (let a = 1; a <= channel.maxNumberToDraw; a++) { 
-                        action.push(makeAction(a + ' member', 'draw', {number: a}));
+                        actions.push(makeAction(a + ' member', 'draw', {number: a}));
                     }
 
-                    const attachments = action.length === 0 ?
+                    const attachments = actions.length === 1 ?
                     [{
                         "title": "Draow Bot",
                         "text": "You add member this channel! If the number of member on the channel is the same as the number of member to draw, it will not run.",
@@ -91,9 +91,7 @@ module.exports = (app) => {
                     [{
                         "title": "Draow Bot",
                         "text": "How many will you Draw?",
-                        "action": [
-                            action
-                        ]
+                        "actions": actions
                     }];
                     
                     res.send({ update: { props: { attachments } } });
