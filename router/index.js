@@ -99,4 +99,33 @@ module.exports = (app) => {
             });
         }
     });
+
+    app.post('/check', (req, res) => {
+        const {channel_id} = req.body;
+
+        const memberList = (memberFile.channelList.find((List) => List.channelId === channel_id)).memberList;
+
+        const member = memberList.filter(member => member.type === 'O');
+        const excludedMember = memberList.filter(member => member.type === 'X');
+        const attachments = [{
+            "title": "Draow Bot",
+            "text": "Checking current channel member list",
+            "fields": []
+        }];
+
+        member.length > 1 ? attachments[0].fields.push(
+            {
+                "short": false,
+                "title": "Member",
+                "value": member.map(member => ' ' + member.userName).join()
+            }) : null;
+
+        excludedMember.length > 1 ? attachments[0].fields.push({
+            "short": false,
+            "title": "Excluded Member",
+            "value": excludedMember.map(member => ' ' + member.userName).join()
+        }) : null;
+
+        res.send({ update: { props: { attachments } } });
+    });
 };
