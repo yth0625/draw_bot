@@ -50,8 +50,9 @@ module.exports = (app) => {
     app.post('/draw', (req, res) => {
         const {channel_id} = req.body;
 
-        try {
+        try {   
             const {number} = req.body.context;
+            if ( number === undefined) throw 'Body no have number';
             memberFile.channelList.map(List => {
                 if (List.channelId === channel_id) {
                     let outputMemberList = new Array();
@@ -78,11 +79,16 @@ module.exports = (app) => {
                 if ( channel.channelId === channel_id ) {
                     let action = new Array();
 
-                    for(let a = 1; a <= channel.maxNumberToDraw; a++) { 
+                    for (let a = 1; a <= channel.maxNumberToDraw; a++) { 
                         action.push(makeAction(a + ' member', 'draw', {number: a}));
                     }
 
-                    const attachments = [{
+                    const attachments = action.length === 0 ?
+                    [{
+                        "title": "Draow Bot",
+                        "text": "You add member this channel! If the number of member on the channel is the same as the number of member to draw, it will not run.",
+                    }] :
+                    [{
                         "title": "Draow Bot",
                         "text": "How many will you Draw?",
                         "action": [
