@@ -113,14 +113,14 @@ module.exports = (app) => {
             "fields": []
         }];
 
-        member.length > 1 ? attachments[0].fields.push(
+        member.length >= 1 ? attachments[0].fields.push(
             {
                 "short": false,
                 "title": "Member",
                 "value": member.map(member => ' ' + member.userName).join()
             }) : null;
 
-        excludedMember.length > 1 ? attachments[0].fields.push({
+        excludedMember.length >= 1 ? attachments[0].fields.push({
             "short": false,
             "title": "Excluded Member",
             "value": excludedMember.map(member => ' ' + member.userName).join()
