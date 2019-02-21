@@ -4,6 +4,15 @@ const memberFilePath = '../config/memberList.json';
 const memberFile = require(memberFilePath);
 const { apiCall, saveFile, makeAction } = require('../helper');
 
+const defaultActions = [
+    makeAction("Draw", 'draw'), 
+    makeAction("Check Member", 'check'), 
+    makeAction("Add Member", 'add'),
+    makeAction("Delete Member", 'delete'),
+    makeAction("Initialize Member", 'init'),
+    makeAction("Maximum number of people Setting", 'maximum')
+];
+
 function initialize(channel_id, text, res) {
     apiCall('GET', {}, `channels/${channel_id}/members`)
                 .then( data => {
@@ -23,7 +32,7 @@ function initialize(channel_id, text, res) {
                             //TODO file path 깔끔하게 고치기
                             saveFile(__dirname + '/' + memberFilePath, memberFile);
                             text instanceof Array ?
-                             res.send({ update: { props: { text } } }) :
+                             res.send({ update: { props: { attachments: text } } }) :
                              res.send({response_type: 'in_channel', text: text});
                         });
                 }).catch(error => {
@@ -42,13 +51,7 @@ module.exports = (app) => {
             const attachments = [{
                 "title": "Draw Bot",
                 "text": "Click the button to try the Draw bot.",
-                "actions": [
-                    makeAction("Draw", 'draw'), 
-                    makeAction("Check Member", 'check'), 
-                    makeAction("Add Member", 'add'),
-                    makeAction("Delete Member", 'delete'),
-                    makeAction("Initialize Member", 'init')
-                ]
+                "actions": defaultActions
             }];
             res.send({ response_type: 'in_channel', attachments });
         }
@@ -157,14 +160,8 @@ module.exports = (app) => {
 
             const attachments = [{
                 "title": "Draw Bot",
-                "text": "Members added successfully!",
-                "actions": [
-                    makeAction("Draw", 'draw'), 
-                    makeAction("Check Member", 'check'), 
-                    makeAction("Add Member", 'add'),
-                    makeAction("Delete Member", 'delete'),
-                    makeAction("Initialize Member", 'init')
-                ]
+                "text": "**Members added successfully!**",
+                "actions": defaultActions
             }];
 
             saveFile(__dirname + '/' + memberFilePath, memberFile);
@@ -183,14 +180,8 @@ module.exports = (app) => {
             const attachments = actions.length === 0 ?
             [{
                 "title": "Draow Bot",
-                "text": "No more members to add.",
-                "actions": [
-                    makeAction("Draw", 'draw'), 
-                    makeAction("Check Member", 'check'), 
-                    makeAction("Add Member", 'add'),
-                    makeAction("Delete Member", 'delete'),
-                    makeAction("Initialize Member", 'init')
-                ]
+                "text": "**No more members to add.**",
+                "actions": defaultActions
             }] :
             [{
                 "title": "Draow Bot",
@@ -212,14 +203,8 @@ module.exports = (app) => {
 
             const attachments = [{
                 "title": "Draw Bot",
-                "text": "Members deleted successfully!",
-                "actions": [
-                    makeAction("Draw", 'draw'), 
-                    makeAction("Check Member", 'check'), 
-                    makeAction("Add Member", 'add'),
-                    makeAction("Delete Member", 'delete'),
-                    makeAction("Initialize Member", 'init')
-                ]
+                "text": "**Members deleted successfully!**",
+                "actions": defaultActions
             }];
 
             memberFile.channelList = memberFile.channelList.map( channel => {
@@ -258,13 +243,7 @@ module.exports = (app) => {
             [{
                 "title": "Draow Bot",
                 "text": "No more members to delete.",
-                "actions": [
-                    makeAction("Draw", 'draw'), 
-                    makeAction("Check Member", 'check'), 
-                    makeAction("Add Member", 'add'),
-                    makeAction("Delete Member", 'delete'),
-                    makeAction("Initialize Member", 'init')
-                ]
+                "actions": defaultActions
             }] :
             [{
                 "title": "Draow Bot",
@@ -282,5 +261,47 @@ module.exports = (app) => {
             "title": "Draw Bot",
             "text": "Initialze member list!"
         }], res);
+    });
+
+    app.post('/maximum', (req, res) => {
+        const {channel_id} = req.body;
+
+        try {   
+            const {number} = req.body.context;
+            if ( number === undefined) throw 'Body no have number';
+
+            memberFile.channelList = memberFile.channelList.map( channel => {
+                if ( channel.channelId === channel_id ) {
+                    channel.maxNumberToDraw = number;
+                }
+                return channel;
+            });
+
+            const attachments = [{
+                "title": "Draw Bot",
+                "text": "**maximum setting successfully!**",
+                "actions": defaultActions
+            }];
+
+            saveFile(__dirname + '/' + memberFilePath, memberFile);
+            res.send({ update: { props: { attachments } } });
+
+        } catch (error) {
+            const maximumCount = memberFile.channelList.find( channel => channel.channelId === channel_id )
+                .memberList.filter( member => member.type === "O").length;
+
+            let actions = new Array();
+            for (let index = 1; index < maximumCount; index++) {
+                actions.push(makeAction(index + ' member', 'maximum', {number: index}));
+            }
+
+            const attachments = [{
+                "title": "Draow Bot",
+                "text": "How maximum people would you like to set?",
+                "actions": actions
+            }];
+
+            res.send({ update: { props: { attachments } } });
+        }
     });
 };
