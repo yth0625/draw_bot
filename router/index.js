@@ -77,10 +77,10 @@ module.exports = (app) => {
         } catch (error) {
             memberFile.channelList.map( channel => {
                 if ( channel.channelId === channel_id ) {
-                    let actions = new Array();
+                    const actions = new Array();
 
-                    for (let a = 1; a <= channel.maxNumberToDraw; a++) { 
-                        actions.push(makeAction(a + ' member', 'draw', {number: a}));
+                    for (let index = 1; index <= channel.maxNumberToDraw; index++) { 
+                        actions.push(makeAction(index + ' member', 'draw', {number: index}));
                     }
 
                     const attachments = actions.length === 1 ?
@@ -127,5 +127,71 @@ module.exports = (app) => {
         }) : null;
 
         res.send({ update: { props: { attachments } } });
+    });
+
+    app.post('/add', (req, res) => {
+        const {channel_id} = req.body;
+
+        try {   
+            const {userName} = req.body.context;
+            if ( userName === undefined) throw 'Body no have userName';
+
+            memberFile.channelList = memberFile.channelList.map( channel => {
+                if ( channel.channelId === channel_id ) {
+                    channel.memberList.map( member => {
+                        if ( member.userName === userName ) {
+                            member.type = "O";
+                        }
+                        return member;
+                    });
+                }
+                return channel;
+            });
+
+            const attachments = [{
+                "title": "Draw Bot",
+                "text": "Members added successfully!",
+                "actions": [
+                    makeAction("Draw", 'draw'), 
+                    makeAction("Check Member", 'check'), 
+                    makeAction("Add Member", 'add'),
+                    makeAction("Delete Member", 'delete'),
+                    makeAction("Initialize Member", 'init')
+                ]
+            }];
+
+            saveFile(__dirname + '/' + memberFilePath, memberFile);
+            res.send({ update: { props: { attachments } } });
+
+        } catch (error) {
+            const memberList = (memberFile.channelList.find((List) => List.channelId === channel_id)).memberList;
+
+            const excludedMember = memberList.filter(member => member.type === 'X');
+
+            let actions = new Array();
+            for (let index = 0; index < excludedMember.length; index++) { 
+                actions.push(makeAction(excludedMember[index].userName, 'add', {userName: excludedMember[index].userName}));
+            }
+
+            const attachments = actions.length === 0 ?
+            [{
+                "title": "Draow Bot",
+                "text": "No more members to add.",
+                "actions": [
+                    makeAction("Draw", 'draw'), 
+                    makeAction("Check Member", 'check'), 
+                    makeAction("Add Member", 'add'),
+                    makeAction("Delete Member", 'delete'),
+                    makeAction("Initialize Member", 'init')
+                ]
+            }] :
+            [{
+                "title": "Draow Bot",
+                "text": "Who do you want to add?",
+                "actions": actions
+            }];
+
+            res.send({ update: { props: { attachments } } });
+        }
     });
 };
