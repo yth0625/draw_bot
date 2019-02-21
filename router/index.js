@@ -1,17 +1,11 @@
 const fetch = require('node-fetch');
 
-//const {Mattermost_Server_URL, Mattermost_Bot_ID, Mattermost_Bot_Password, Use_Port} = require('../config/config.json');
-
 const memberFilePath = '../config/memberList.json';
 const memberFile = require(memberFilePath);
 const { apiCall, saveFile, makeAction } = require('../helper');
 
-module.exports = (app) => {
-    app.post('/start', (req, res) => {
-        const {channel_id} = req.body;
-
-        if ( memberFile.channelList.find((List) => List.channelId === channel_id) === undefined ) {
-            apiCall('GET', {}, `channels/${channel_id}/members`)
+function initialize(channel_id, text, res) {
+    apiCall('GET', {}, `channels/${channel_id}/members`)
                 .then( data => {
                     const channelUserListById = data.map( user => { return user.user_id;} );
                     apiCall('POST', channelUserListById, 'users/ids')
@@ -25,12 +19,25 @@ module.exports = (app) => {
                                 ,
                                 'maxNumberToDraw': channelUserList.length > 5 ? 5 : channelUserList.length - 1
                             });
-        
+
                             //TODO file path 깔끔하게 고치기
                             saveFile(__dirname + '/' + memberFilePath, memberFile);
-                            res.send({response_type: 'in_channel', text: 'This channel member list is empty. Initialize the member list.'});
+                            text instanceof Array ?
+                             res.send({ update: { props: { text } } }) :
+                             res.send({response_type: 'in_channel', text: text});
                         });
+                }).catch(error => {
+                    console.log(error);
+                    res.send({response_type: 'in_channel', text: 'Server connection error'})
                 });
+}
+
+module.exports = (app) => {
+    app.post('/start', (req, res) => {
+        const {channel_id} = req.body;
+
+        if ( memberFile.channelList.find((List) => List.channelId === channel_id) === undefined ) {
+            initialize(channel_id, 'This channel member list is empty. Initialize the member list.', res);
         } else {
             const attachments = [{
                 "title": "Draw Bot",
@@ -220,8 +227,8 @@ module.exports = (app) => {
 
                     if ( channel.maxNumberToDraw === 1 ) {
                         attachments[0].text = "There are only 2 members and can't be deleted any more."
-                        return member;
-                    } else ( channel.maxNumberToDraw - channel.memberList.lenth === 1) 
+                        return channel;
+                    } else if ( channel.maxNumberToDraw - channel.memberList.lenth === 1) 
                         channel.maxNumberToDraw--;
 
                     channel.memberList.map( member => {
@@ -267,5 +274,13 @@ module.exports = (app) => {
 
             res.send({ update: { props: { attachments } } });
         }
+    });
+
+    app.post('/init', (req, res) => {
+        const {channel_id} = req.body;
+        initialize(channel_id, [{
+            "title": "Draw Bot",
+            "text": "Initialze member list!"
+        }], res);
     });
 };
