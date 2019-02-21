@@ -194,4 +194,78 @@ module.exports = (app) => {
             res.send({ update: { props: { attachments } } });
         }
     });
+
+
+    app.post('/delete', (req, res) => {
+        const {channel_id} = req.body;
+
+        try {   
+            const {userName} = req.body.context;
+            if ( userName === undefined) throw 'Body no have userName';
+
+            const attachments = [{
+                "title": "Draw Bot",
+                "text": "Members deleted successfully!",
+                "actions": [
+                    makeAction("Draw", 'draw'), 
+                    makeAction("Check Member", 'check'), 
+                    makeAction("Add Member", 'add'),
+                    makeAction("Delete Member", 'delete'),
+                    makeAction("Initialize Member", 'init')
+                ]
+            }];
+
+            memberFile.channelList = memberFile.channelList.map( channel => {
+                if ( channel.channelId === channel_id ) {
+
+                    if ( channel.maxNumberToDraw === 1 ) {
+                        attachments[0].text = "There are only 2 members and can't be deleted any more."
+                        return member;
+                    } else ( channel.maxNumberToDraw - channel.memberList.lenth === 1) 
+                        channel.maxNumberToDraw--;
+
+                    channel.memberList.map( member => {
+                        if ( member.userName === userName ) {
+                            member.type = "X";
+                        }
+                        return member;
+                    });
+                }
+                return channel;
+            });
+
+            saveFile(__dirname + '/' + memberFilePath, memberFile);
+            res.send({ update: { props: { attachments } } });
+
+        } catch (error) {
+            const memberList = (memberFile.channelList.find((List) => List.channelId === channel_id)).memberList;
+
+            const member = memberList.filter(member => member.type === 'O');
+
+            let actions = new Array();
+            for (let index = 0; index < member.length; index++) { 
+                actions.push(makeAction(member[index].userName, 'delete', {userName: member[index].userName}));
+            }
+
+            const attachments = actions.length === 0 ?
+            [{
+                "title": "Draow Bot",
+                "text": "No more members to delete.",
+                "actions": [
+                    makeAction("Draw", 'draw'), 
+                    makeAction("Check Member", 'check'), 
+                    makeAction("Add Member", 'add'),
+                    makeAction("Delete Member", 'delete'),
+                    makeAction("Initialize Member", 'init')
+                ]
+            }] :
+            [{
+                "title": "Draow Bot",
+                "text": "Who do you want to delete?",
+                "actions": actions
+            }];
+
+            res.send({ update: { props: { attachments } } });
+        }
+    });
 };
