@@ -67,7 +67,7 @@ module.exports = (app) => {
                 if (List.channelId === channel_id) {
                     let outputMemberList = new Array();
                     do {
-                        const randomNumber = ~~(Math.random() * List.memberList.length -1);
+                        const randomNumber = ~~(Math.random() * List.memberList.length);
 
                         if ( List.memberList[randomNumber].type === "O" &&
                             outputMemberList.find( member => member.userName === List.memberList[randomNumber].userName) === undefined) {
@@ -93,7 +93,7 @@ module.exports = (app) => {
                         actions.push(makeAction(index + ' member', 'draw', {number: index}));
                     }
 
-                    const attachments = actions.length === 1 ?
+                    const attachments = actions.length === 0 ?
                     [{
                         "title": "Draow Bot",
                         "text": "You add member this channel! If the number of member on the channel is the same as the number of member to draw, it will not run.",
@@ -211,7 +211,7 @@ module.exports = (app) => {
                 if ( channel.channelId === channel_id ) {
 
                     if ( channel.maxNumberToDraw === 1 ) {
-                        attachments[0].text = "There are only 2 members and can't be deleted any more."
+                        attachments[0].text = "**There are only 2 members and can't be deleted any more.**"
                         return channel;
                     } else if ( channel.maxNumberToDraw - channel.memberList.lenth === 1) 
                         channel.maxNumberToDraw--;
