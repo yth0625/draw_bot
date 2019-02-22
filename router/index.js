@@ -16,6 +16,7 @@ const defaultActions = [
 function initialize(channel_id, text, res) {
     apiCall('GET', {}, `channels/${channel_id}/members`)
                 .then( data => {
+                    if ( data.id === "api.context.permissions.app_error" ) throw data.message;
                     const channelUserListById = data.map( user => { return user.user_id;} );
                     apiCall('POST', channelUserListById, 'users/ids')
                         .then( data => {
@@ -36,8 +37,7 @@ function initialize(channel_id, text, res) {
                              res.send({response_type: 'in_channel', text: text});
                         });
                 }).catch(error => {
-                    console.log(error);
-                    res.send({response_type: 'in_channel', text: 'Server connection error'})
+                    res.send({response_type: 'in_channel', text: error})
                 });
 }
 
