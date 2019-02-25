@@ -23,8 +23,9 @@ function initialize(channel_id, text, res) {
                             const channelUserList = data.map( user => { return user.username;} );
                             
                             const deleteIndex = memberFile.channelList.findIndex( channel => channel.channelId === channel_id);
+                            
                             if (deleteIndex > -1)
-                                memberFile.channelList.slice(deleteIndex, 1);
+                                memberFile.channelList = memberFile.channelList.slice(deleteIndex, 1);
 
                             memberFile.channelList.push({
                                 'channelId': channel_id,
