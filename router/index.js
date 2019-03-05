@@ -124,7 +124,8 @@ module.exports = (app) => {
         const attachments = [{
             "title": "Draow Bot",
             "text": "Checking current channel member list",
-            "fields": []
+            "fields": [],
+            "actions": defaultActions
         }];
 
         member.length >= 1 ? attachments[0].fields.push(
