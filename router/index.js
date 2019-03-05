@@ -215,12 +215,14 @@ module.exports = (app) => {
             memberFile.channelList = memberFile.channelList.map( channel => {
                 if ( channel.channelId === channel_id ) {
 
+                    const memberList = channel.memberList.filter(member => member.type === 'O');
+
                     if ( channel.maxNumberToDraw === 1 ) {
                         attachments[0].text = "**There are only 2 members and can't be deleted any more.**"
                         return channel;
-                    } else if ( channel.maxNumberToDraw >= channel.memberList.length ) 
-                        channel.maxNumberToDraw = channel.memberList.length - 1 ;
-
+                    } else if ( channel.maxNumberToDraw === memberList.length - 1 )
+                        channel.maxNumberToDraw = memberList.length - 2;
+                        
                     channel.memberList.map( member => {
                         if ( member.userName === userName ) {
                             member.type = "X";
