@@ -20,7 +20,10 @@ function initialize(channel_id, text, res) {
                     const channelUserListById = data.map( user => { return user.user_id;} );
                     apiCall('POST', channelUserListById, 'users/ids')
                         .then( data => {
-                            const channelUserList = data.map( user => { return user.username;} );
+                            const channelUserList = new Array();
+                            data.map( user => {
+                                if ( !user.delete_at ) channelUserList.push({userName: user.username, type: "O"});
+                            });
                             
                             const deleteIndex = memberFile.channelList.findIndex( channel => channel.channelId === channel_id);
                             
@@ -29,9 +32,7 @@ function initialize(channel_id, text, res) {
 
                             memberFile.channelList.push({
                                 'channelId': channel_id,
-                                'memberList': 
-                                    channelUserList.map( user => {return {"userName": user, "type": "O"}})
-                                ,
+                                'memberList': channelUserList,
                                 'maxNumberToDraw': channelUserList.length > 5 ? 5 : channelUserList.length - 1
                             });
 
