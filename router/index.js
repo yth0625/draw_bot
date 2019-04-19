@@ -81,7 +81,7 @@ module.exports = (app) => {
                     } while (outputMemberList.length < number);
 
                     const attachments = [{
-                        "title": "Draow Bot",
+                        "title": "Draw Bot",
                         "text": "Congratulations!!!" + outputMemberList.map((member) => {return ' @'+member.userName})
                     }];
     
