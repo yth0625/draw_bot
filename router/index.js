@@ -182,19 +182,22 @@ module.exports = (app) => {
             for (let index = 0; index < excludedMember.length; index++) { 
                 actions.push(makeAction(excludedMember[index].userName, 'add', {userName: excludedMember[index].userName}));
             }
-            actions.push(makeAction("Back", 'back'));
 
-            const attachments = actions.length === 0 ?
-            [{
-                "title": "Draow Bot",
-                "text": "**No more members to add.**",
-                "actions": defaultActions
-            }] :
-            [{
-                "title": "Draow Bot",
-                "text": "Who do you want to add?",
-                "actions": actions
-            }];
+            let attachments;
+            if ( actions.length === 0 ) {
+                attachments = [{
+                    "title": "Draow Bot",
+                    "text": "**No more members to add.**",
+                    "actions": defaultActions
+                }];
+            } else {
+                actions.push(makeAction("Back", 'back'));
+                attachments = [{
+                    "title": "Draow Bot",
+                    "text": "Who do you want to add?",
+                    "actions": actions
+                }];
+            }
 
             res.send({ update: { props: { attachments } } });
         }
@@ -247,19 +250,22 @@ module.exports = (app) => {
             for (let index = 0; index < member.length; index++) { 
                 actions.push(makeAction(member[index].userName, 'delete', {userName: member[index].userName}));
             }
-            actions.push(makeAction("Back", 'back'));
 
-            const attachments = actions.length === 0 ?
-            [{
-                "title": "Draow Bot",
-                "text": "No more members to delete.",
-                "actions": defaultActions
-            }] :
-            [{
-                "title": "Draow Bot",
-                "text": "Who do you want to delete?",
-                "actions": actions
-            }];
+            let attachments;
+            if ( actions.length === 0 ) {
+                attachments = [{
+                    "title": "Draow Bot",
+                    "text": "No more members to delete.",
+                    "actions": defaultActions
+                }];
+            } else {
+                actions.push(makeAction("Back", 'back'));
+                attachments = [{
+                    "title": "Draow Bot",
+                    "text": "Who do you want to delete?",
+                    "actions": actions
+                }];
+            }
 
             res.send({ update: { props: { attachments } } });
         }
