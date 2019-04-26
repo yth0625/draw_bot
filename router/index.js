@@ -96,6 +96,7 @@ module.exports = (app) => {
                     for (let index = 1; index <= channel.maxNumberToDraw; index++) { 
                         actions.push(makeAction(index + ' member', 'draw', {number: index}));
                     }
+                    actions.push(makeAction("Back", 'back'));
 
                     const attachments = actions.length === 0 ?
                     [{
@@ -181,6 +182,7 @@ module.exports = (app) => {
             for (let index = 0; index < excludedMember.length; index++) { 
                 actions.push(makeAction(excludedMember[index].userName, 'add', {userName: excludedMember[index].userName}));
             }
+            actions.push(makeAction("Back", 'back'));
 
             const attachments = actions.length === 0 ?
             [{
@@ -245,6 +247,7 @@ module.exports = (app) => {
             for (let index = 0; index < member.length; index++) { 
                 actions.push(makeAction(member[index].userName, 'delete', {userName: member[index].userName}));
             }
+            actions.push(makeAction("Back", 'back'));
 
             const attachments = actions.length === 0 ?
             [{
@@ -301,6 +304,7 @@ module.exports = (app) => {
             for (let index = 1; index < maximumCount; index++) {
                 actions.push(makeAction(index + ' member', 'maximum', {number: index}));
             }
+            actions.push(makeAction("Back", 'back'));
 
             const attachments = [{
                 "title": "Draow Bot",
@@ -311,4 +315,14 @@ module.exports = (app) => {
             res.send({ update: { props: { attachments } } });
         }
     });
+
+    app.post('/back', (req, res) => {
+        const attachments = [{
+            "title": "Draw Bot",
+            "text": "Click the button to try the Draw bot.",
+            "actions": defaultActions
+        }];
+        res.send({ update: { props: { attachments } } });
+    });
+    
 };
